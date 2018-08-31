@@ -210,9 +210,12 @@ public:
             if (!isSubStep)
                 restartValue.addExtra("OPMEXTRA", std::vector<double>(1, nextStepSize));
 
-            if (simConfig.useThresholdPressure())
-                restartValue.addExtra("THPRES", Opm::UnitSystem::measure::pressure, simulator_.problem().thresholdPressure().data());
+            if (simConfig.useThresholdPressure()) 
+		restartValue.addExtra("THRESHPR", Opm::UnitSystem::measure::pressure, simulator_.problem().thresholdPressure().data());
+	      //restartValue.solution.insert ("THRESHPR"", Opm::UnitSystem::measure::pressure, simulator_.problem().thresholdPressure().data(), Opm::data::TargetType::RESTART_SOLUTION);
 
+	        
+	    
             // first, create a tasklet to write the data for the current time step to disk
             auto eclWriteTasklet = std::make_shared<EclWriteTasklet>(*eclIO_,
                                                                      episodeIdx,
@@ -294,7 +297,10 @@ public:
                 restartValue.addExtra("OPMEXTRA", std::vector<double>(1, nextStepSize));
 
             if (simConfig.useThresholdPressure())
-                restartValue.addExtra("THPRES", Opm::UnitSystem::measure::pressure, simulator_.problem().thresholdPressure().data());
+	      restartValue.addExtra("THRESHPR", Opm::UnitSystem::measure::pressure, simulator_.problem().thresholdPressure().data());
+	      //restartValue.solution.insert ("THRESHPR", Opm::UnitSystem::measure::pressure, simulator_.problem().thresholdPressure().data(), Opm::data::TargetType::RESTART_SOLUTION);
+                
+	    
 
             // first, create a tasklet to write the data for the current time step to disk
             auto eclWriteTasklet = std::make_shared<EclWriteTasklet>(*eclIO_,
@@ -335,7 +341,7 @@ public:
 
         const auto& inputThpres = eclState().getSimulationConfig().getThresholdPressure();
         std::vector<Opm::RestartKey> extraKeys = {{"OPMEXTRA", Opm::UnitSystem::measure::identity, false},
-                                                  {"THPRES", Opm::UnitSystem::measure::pressure, inputThpres.active()}};
+                                                  {"THRESHPR", Opm::UnitSystem::measure::pressure, inputThpres.active()}};
 
         unsigned episodeIdx = simulator_.episodeIndex();
         const auto& gridView = simulator_.vanguard().gridView();
@@ -350,7 +356,7 @@ public:
         if (inputThpres.active()) {
             Simulator& mutableSimulator = const_cast<Simulator&>(simulator_);
             auto& thpres = mutableSimulator.problem().thresholdPressure();
-            const auto& thpresValues = restartValues.getExtra("THPRES");
+            const auto& thpresValues = restartValues.getExtra("THRESHPR");
             thpres.setFromRestart(thpresValues);
         }
     }
